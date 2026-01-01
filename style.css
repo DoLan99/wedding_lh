@@ -422,10 +422,34 @@ a,
 
         .ladi-wraper {
             margin: 0 auto;
-            width: 420px;
+            width: 100%;
+            max-width: 420px;
             min-height: 100%;
             overflow: hidden;
             touch-action: manipulation;
+        }
+        
+        @media screen and (max-width: 480px) {
+            .ladi-wraper {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .ladi-container {
+                width: 100%;
+            }
+            
+            iframe {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .ladi-wraper {
+                width: 100%;
+                max-width: 100%;
+            }
         }
 
         .ladi-container {
