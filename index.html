@@ -4444,7 +4444,7 @@
                                 <!-- Nhạc nền -->
                                 <audio id="background-music"
                                     src="https://vnno-ne-1-tf-a128-z3.zmdcdn.me/06e9c9c95003009099ef6ae31327927f?authen=exp=1767370406~acl=/06e9c9c95003009099ef6ae31327927f*~hmac=4f225740afff793d11a8b1c9107b6cdf"
-                                    preload="none" loop="">
+                                    preload="auto" loop autoplay>
                                 </audio>
 
                                 <!-- Nút toggle nhạc (cố định góc trái dưới) -->
@@ -4551,8 +4551,16 @@
                                             }
                                         };
 
-                                        document.body.addEventListener("click", startOnce, { once: true });
-                                        document.body.addEventListener("touchstart", startOnce, { once: true, passive: true });
+                                        // Tự động phát nhạc khi trang tải
+                                        audio.play().then(() => {
+                                            isPlaying = true;
+                                            hasStarted = true;
+                                            setUI(true);
+                                        }).catch(() => {
+                                            // Nếu trình duyệt chặn autoplay, chờ tương tác người dùng
+                                            document.body.addEventListener("click", startOnce, { once: true });
+                                            document.body.addEventListener("touchstart", startOnce, { once: true, passive: true });
+                                        });
 
                                         toggleButton.addEventListener("click", function (event) {
                                             event.stopPropagation();
