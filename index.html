@@ -3712,46 +3712,6 @@
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <!-- PROTECT_COPY_START -->
-    <script>
-        window.oncontextmenu = function () {
-            return false;
-        };
-        // document.onkeydown = function (e) {
-        //     if ((e.ctrlKey || e.metaKey) && e.which == 85) {
-        //         e.preventDefault();
-        //         return false;
-        //     }
-        // };
-        // document.addEventListener("keydown", function (event) {
-        //     if (
-        //         event.key === "F12" ||
-        //         (event.ctrlKey && event.shiftKey && event.key === "I") ||
-        //         (event.ctrlKey && event.shiftKey && event.key === "J") ||
-        //         (event.ctrlKey && event.key === "U")
-        //     ) {
-        //         event.preventDefault();
-        //         alert("Không được phép!");
-        //     }
-        // });
-
-        (function () {
-            const styleTitle = 'font-size: 48px; font-weight: bold; color: red;';
-            const styleMsg = 'font-size: 16px;';
-
-            console.log('%cDừng lại!', styleTitle);
-            console.log('%cĐây là một tính năng của trình duyệt dành cho các nhà phát triển. Nếu ai đó bảo bạn sao chép-dán nội dung nào đó vào đây để bật một tính năng của LadiPage hoặc "hack" tài khoản của người khác, thì đó là hành vi lừa đảo và sẽ khiến họ có thể truy cập vào tài khoản của bạn.', styleMsg);
-        })();
-    </script>
-    <!-- <style>
-        body {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-    </style> -->
-    <!-- PROTECT_COPY_END -->
 </head>
 
 <body class="">
@@ -4443,21 +4403,208 @@
                                 <!-- ====== AUDIO & TOGGLE (HTML Box) ====== -->
                                 <!-- Nhạc nền -->
                                 <audio id="background-music"
-                                    src="https://vnno-ne-1-tf-a128-z3.zmdcdn.me/06e9c9c95003009099ef6ae31327927f?authen=exp=1767370406~acl=/06e9c9c95003009099ef6ae31327927f*~hmac=4f225740afff793d11a8b1c9107b6cdf"
+                                    src="./image/nhaccuoi.mp3"
                                     preload="auto" loop autoplay>
                                 </audio>
+                                
+                                <script>
+                                    // Thử phát nhạc ngay khi audio element được tạo
+                                    (function() {
+                                        const audioEl = document.getElementById("background-music");
+                                        const playIcon = document.getElementById("play-icon");
+                                        const pauseIcon = document.getElementById("pause-icon");
+                                        const toggleButton = document.getElementById("music-toggle");
+                                        let hasStarted = false;
+                                        
+                                        function updateUI(playing) {
+                                            if (playIcon && pauseIcon && toggleButton) {
+                                                if (playing) {
+                                                    playIcon.style.display = "none";
+                                                    pauseIcon.style.display = "block";
+                                                    toggleButton.classList.add("vibrating");
+                                                } else {
+                                                    playIcon.style.display = "block";
+                                                    pauseIcon.style.display = "none";
+                                                    toggleButton.classList.remove("vibrating");
+                                                }
+                                            }
+                                        }
+                                        
+                                        function tryPlayMusic() {
+                                            if (!audioEl || hasStarted) return;
+                                            
+                                            // Kiểm tra nếu đã phát rồi
+                                            if (!audioEl.paused) {
+                                                hasStarted = true;
+                                                updateUI(true);
+                                                return;
+                                            }
+                                            
+                                            // Đảm bảo audio đã load
+                                            if (audioEl.readyState < 2) {
+                                                audioEl.load();
+                                                audioEl.addEventListener('canplay', function() {
+                                                    const playPromise = audioEl.play();
+                                                    if (playPromise !== undefined) {
+                                                        playPromise.then(function() {
+                                                            hasStarted = true;
+                                                            updateUI(true);
+                                                        }).catch(function(err) {
+                                                            console.log("Play failed:", err);
+                                                        });
+                                                    }
+                                                }, { once: true });
+                                                return;
+                                            }
+                                            
+                                            // Thử phát nhạc
+                                            const playPromise = audioEl.play();
+                                            if (playPromise !== undefined) {
+                                                playPromise.then(function() {
+                                                    hasStarted = true;
+                                                    updateUI(true);
+                                                }).catch(function(err) {
+                                                    // Autoplay bị chặn, sẽ thử lại khi có tương tác
+                                                    console.log("Autoplay blocked, waiting for user interaction:", err);
+                                                });
+                                            }
+                                        }
+                                        
+                                        if (audioEl) {
+                                            audioEl.volume = 0.6;
+                                            
+                                            // Lắng nghe sự kiện play/pause
+                                            audioEl.addEventListener("play", function() {
+                                                hasStarted = true;
+                                                updateUI(true);
+                                            });
+                                            
+                                            audioEl.addEventListener("pause", function() {
+                                                updateUI(false);
+                                            });
+                                            
+                                            // Thử phát ngay nhiều lần
+                                            setTimeout(tryPlayMusic, 50);
+                                            setTimeout(tryPlayMusic, 150);
+                                            setTimeout(tryPlayMusic, 300);
+                                            setTimeout(tryPlayMusic, 500);
+                                            setTimeout(tryPlayMusic, 800);
+                                            
+                                            // Thử khi window load
+                                            window.addEventListener("load", function() {
+                                                setTimeout(tryPlayMusic, 100);
+                                                setTimeout(tryPlayMusic, 300);
+                                            }, { once: true });
+                                            
+                                            // Hàm để phát nhạc khi có tương tác
+                                            function playOnInteraction() {
+                                                if (!audioEl) {
+                                                    console.log("Audio element not found");
+                                                    return;
+                                                }
+                                                
+                                                // Kiểm tra nếu đã phát rồi thì không làm gì
+                                                if (!audioEl.paused) {
+                                                    hasStarted = true;
+                                                    updateUI(true);
+                                                    return;
+                                                }
+                                                
+                                                console.log("Attempting to play music on interaction");
+                                                
+                                                // Đảm bảo audio đã load
+                                                if (audioEl.readyState < 2) {
+                                                    audioEl.load();
+                                                }
+                                                
+                                                // Thử phát ngay - không kiểm tra hasStarted
+                                                const playPromise = audioEl.play();
+                                                if (playPromise !== undefined) {
+                                                    playPromise.then(function() {
+                                                        console.log("Music started successfully");
+                                                        hasStarted = true;
+                                                        updateUI(true);
+                                                    }).catch(function(err) {
+                                                        console.log("Play failed, retrying:", err);
+                                                        // Vẫn bị chặn, thử lại sau 50ms
+                                                        setTimeout(function() {
+                                                            if (audioEl && audioEl.paused) {
+                                                                audioEl.play().then(function() {
+                                                                    console.log("Music started on retry");
+                                                                    hasStarted = true;
+                                                                    updateUI(true);
+                                                                }).catch(function(err2) {
+                                                                    console.log("Retry also failed:", err2);
+                                                                });
+                                                            }
+                                                        }, 50);
+                                                    });
+                                                }
+                                            }
+                                            
+                                            // Thử phát khi user scroll - không dùng once để đảm bảo phát được
+                                            let scrollTried = false;
+                                            window.addEventListener("scroll", function() {
+                                                if (!scrollTried) {
+                                                    scrollTried = true;
+                                                    playOnInteraction();
+                                                }
+                                            }, { passive: true });
+                                            
+                                            // Thử phát khi user di chuyển chuột - không dùng once
+                                            let mouseTried = false;
+                                            document.addEventListener("mousemove", function() {
+                                                if (!mouseTried) {
+                                                    mouseTried = true;
+                                                    playOnInteraction();
+                                                }
+                                            }, { passive: true });
+                                            
+                                            // Thử phát khi user click bất kỳ đâu (trừ nút toggle)
+                                            document.addEventListener("click", function(e) {
+                                                if (!e.target.closest('#music-toggle')) {
+                                                    playOnInteraction();
+                                                }
+                                            }, { once: true, passive: true });
+                                            
+                                            // Thử phát khi user touch
+                                            document.addEventListener("touchstart", playOnInteraction, { once: true, passive: true });
+                                            
+                                            // Thử phát khi user nhấn phím
+                                            document.addEventListener("keydown", playOnInteraction, { once: true, passive: true });
+                                            
+                                            // Thử phát khi user di chuyển chuột vào trang
+                                            document.addEventListener("mouseenter", playOnInteraction, { once: true, passive: true });
+                                            
+                                            // Thử phát khi user focus vào trang
+                                            window.addEventListener("focus", playOnInteraction, { once: true });
+                                            
+                                            // Event listener tổng quát - phát nhạc khi có bất kỳ tương tác nào
+                                            const interactionEvents = ['click', 'touchstart', 'keydown', 'mousedown', 'pointerdown'];
+                                            interactionEvents.forEach(function(eventType) {
+                                                document.addEventListener(eventType, function(e) {
+                                                    // Bỏ qua nếu click vào nút toggle (nút sẽ xử lý riêng)
+                                                    if (eventType === 'click' && e.target.closest('#music-toggle')) {
+                                                        return;
+                                                    }
+                                                    playOnInteraction();
+                                                }, { once: true, passive: true });
+                                            });
+                                        }
+                                    })();
+                                </script>
 
                                 <!-- Nút toggle nhạc (cố định góc trái dưới) -->
-                                <div id="music-toggle" title="Bật / Tắt nhạc" aria-label="Bật / Tắt nhạc">
+                                <div id="music-toggle" class="vibrating" title="Bật / Tắt nhạc" aria-label="Bật / Tắt nhạc">
                                     <!-- PNG khi NHẠC TẮT -->
                                     <img id="play-icon"
                                         src="https://content.pancake.vn/1/02/d4/a7/88/fef5132f979892c1778a688f2039942fc24b396b332750179775f87e-w:200-h:200-l:8183-t:image/png.png"
-                                        alt="Play" width="44" height="44" decoding="async" loading="lazy">
+                                        alt="Play" width="44" height="44" decoding="async" loading="lazy"
+                                        style="display:none">
                                     <!-- GIF khi NHẠC BẬT -->
                                     <img id="pause-icon"
                                         src="https://content.pancake.vn/1/31/08/c9/52/c9f574ca2fa8481e1c8c657100583ddfbf47e33427d480a7dc32e788-w:200-h:200-l:242141-t:image/gif.gif"
-                                        alt="Pause" width="44" height="44" decoding="async" loading="lazy"
-                                        style="display:none">
+                                        alt="Pause" width="44" height="44" decoding="async" loading="lazy">
                                 </div>
 
                                 <style>
@@ -4519,17 +4666,49 @@
                                 </style>
 
                                 <script>
-                                    document.addEventListener("DOMContentLoaded", function () {
-                                        const audio = document.getElementById("background-music");
-                                        const toggleButton = document.getElementById("music-toggle");
-                                        const playIcon = document.getElementById("play-icon");   // PNG (nhạc tắt)
-                                        const pauseIcon = document.getElementById("pause-icon"); // GIF (nhạc bật)
-
-                                        audio.volume = 0.6;
+                                    // Khởi tạo ngay khi script chạy (không chờ DOMContentLoaded)
+                                    (function() {
+                                        let audio, toggleButton, playIcon, pauseIcon;
                                         let isPlaying = false;
                                         let hasStarted = false;
 
+                                        function initAudio() {
+                                            audio = document.getElementById("background-music");
+                                            if (!audio) return false;
+                                            
+                                            toggleButton = document.getElementById("music-toggle");
+                                            playIcon = document.getElementById("play-icon");
+                                            pauseIcon = document.getElementById("pause-icon");
+                                            
+                                            if (!toggleButton || !playIcon || !pauseIcon) return false;
+                                            
+                                            audio.volume = 0.6;
+                                            
+                                            // Đồng bộ trạng thái ban đầu với UI
+                                            // Vì mặc định icon hiển thị là "đang phát", nên cần kiểm tra trạng thái thực tế
+                                            setTimeout(function() {
+                                                if (audio) {
+                                                    if (!audio.paused) {
+                                                        // Nhạc đang phát
+                                                        isPlaying = true;
+                                                        hasStarted = true;
+                                                        setUI(true);
+                                                    } else {
+                                                        // Nhạc chưa phát, nhưng UI mặc định hiển thị "đang phát"
+                                                        // Cần cập nhật UI để phù hợp với trạng thái thực tế
+                                                        // Hoặc giữ nguyên UI và đợi nhạc phát
+                                                        isPlaying = false;
+                                                        hasStarted = false;
+                                                        // Giữ UI ở trạng thái "đang phát" vì đó là mặc định
+                                                    }
+                                                }
+                                            }, 100);
+                                            
+                                            return true;
+                                        }
+
                                         function setUI(playing) {
+                                            if (!toggleButton || !playIcon || !pauseIcon) return;
                                             if (playing) {
                                                 playIcon.style.display = "none";
                                                 pauseIcon.style.display = "block";
@@ -4541,10 +4720,23 @@
                                             }
                                         }
 
-                                        const tryPlay = () => {
-                                            if (!hasStarted) {
-                                                // Đảm bảo audio đã load
-                                                if (audio.readyState >= 2) {
+                                        function tryPlay() {
+                                            if (!audio) return;
+                                            
+                                            // Kiểm tra nếu đã phát rồi
+                                            if (!audio.paused) {
+                                                isPlaying = true;
+                                                hasStarted = true;
+                                                setUI(true);
+                                                return;
+                                            }
+                                            
+                                            if (hasStarted) return;
+                                            
+                                            // Đảm bảo audio đã load
+                                            if (audio.readyState < 2) {
+                                                audio.load();
+                                                audio.addEventListener('canplay', function() {
                                                     const playPromise = audio.play();
                                                     if (playPromise !== undefined) {
                                                         playPromise.then(() => {
@@ -4552,87 +4744,238 @@
                                                             hasStarted = true;
                                                             setUI(true);
                                                         }).catch(() => {
-                                                            // Autoplay bị chặn, sẽ thử lại khi có tương tác
+                                                            // Autoplay bị chặn
                                                         });
                                                     }
-                                                } else {
-                                                    // Chờ audio load xong
-                                                    audio.addEventListener('canplay', function() {
-                                                        if (!hasStarted) {
-                                                            const playPromise = audio.play();
-                                                            if (playPromise !== undefined) {
-                                                                playPromise.then(() => {
-                                                                    isPlaying = true;
-                                                                    hasStarted = true;
-                                                                    setUI(true);
-                                                                }).catch(() => {});
-                                                            }
-                                                        }
-                                                    }, { once: true });
-                                                    audio.load(); // Force load audio
-                                                }
+                                                }, { once: true });
+                                                return;
                                             }
-                                        };
+                                            
+                                            // Thử phát ngay
+                                            const playPromise = audio.play();
+                                            if (playPromise !== undefined) {
+                                                playPromise.then(() => {
+                                                    isPlaying = true;
+                                                    hasStarted = true;
+                                                    setUI(true);
+                                                }).catch((err) => {
+                                                    // Autoplay bị chặn
+                                                    console.log("Play failed:", err);
+                                                });
+                                            }
+                                        }
 
-                                        // Thử phát nhạc ngay khi DOM ready
-                                        setTimeout(tryPlay, 100);
+                                        // Thử khởi tạo ngay
+                                        if (document.readyState === 'loading') {
+                                            document.addEventListener("DOMContentLoaded", function() {
+                                                if (initAudio()) {
+                                                    // Thử phát ngay
+                                                    setTimeout(tryPlay, 50);
+                                                    setTimeout(tryPlay, 200);
+                                                    setTimeout(tryPlay, 500);
+                                                }
+                                            });
+                                        } else {
+                                            // DOM đã sẵn sàng
+                                            if (initAudio()) {
+                                                setTimeout(tryPlay, 50);
+                                                setTimeout(tryPlay, 200);
+                                                setTimeout(tryPlay, 500);
+                                            }
+                                        }
 
                                         // Thử lại khi window load
                                         window.addEventListener("load", function() {
-                                            if (!hasStarted) {
-                                                setTimeout(tryPlay, 200);
+                                            if (!audio && initAudio()) {
+                                                setTimeout(tryPlay, 100);
+                                                setTimeout(tryPlay, 300);
+                                            } else if (audio && !hasStarted) {
+                                                setTimeout(tryPlay, 100);
+                                                setTimeout(tryPlay, 300);
                                             }
                                         });
 
-                                        // Thử phát khi user scroll (một số trình duyệt cho phép)
-                                        let scrollAttempted = false;
-                                        window.addEventListener("scroll", function() {
-                                            if (!hasStarted && !scrollAttempted) {
-                                                scrollAttempted = true;
-                                                tryPlay();
+                                        // Hàm để phát nhạc khi có tương tác
+                                        function playOnUserInteraction() {
+                                            if (!audio) return;
+                                            
+                                            // Kiểm tra nếu đã phát rồi thì không làm gì
+                                            if (!audio.paused) {
+                                                isPlaying = true;
+                                                hasStarted = true;
+                                                setUI(true);
+                                                return;
                                             }
-                                        }, { once: true, passive: true });
-
-                                        // Thử phát khi user di chuyển chuột
-                                        let mouseAttempted = false;
-                                        document.addEventListener("mousemove", function() {
-                                            if (!hasStarted && !mouseAttempted) {
-                                                mouseAttempted = true;
-                                                tryPlay();
+                                            
+                                            // Đảm bảo audio đã load
+                                            if (audio.readyState < 2) {
+                                                audio.load();
                                             }
-                                        }, { once: true, passive: true });
-
-                                        // Fallback: chờ click/touch nếu vẫn chưa phát được
-                                        const startOnce = () => {
-                                            if (!hasStarted) {
-                                                audio.play().then(() => {
+                                            
+                                            // Thử phát ngay - không kiểm tra hasStarted
+                                            const playPromise = audio.play();
+                                            if (playPromise !== undefined) {
+                                                playPromise.then(() => {
                                                     isPlaying = true;
                                                     hasStarted = true;
                                                     setUI(true);
-                                                }).catch(() => { setUI(false); });
+                                                }).catch(() => {
+                                                    // Vẫn bị chặn, thử lại sau 50ms
+                                                    setTimeout(() => {
+                                                        if (audio && audio.paused) {
+                                                            audio.play().then(() => {
+                                                                isPlaying = true;
+                                                                hasStarted = true;
+                                                                setUI(true);
+                                                            }).catch(() => {});
+                                                        }
+                                                    }, 50);
+                                                });
                                             }
-                                        };
-                                        document.body.addEventListener("click", startOnce, { once: true });
-                                        document.body.addEventListener("touchstart", startOnce, { once: true, passive: true });
+                                        }
 
-                                        toggleButton.addEventListener("click", function (event) {
-                                            event.stopPropagation();
-                                            if (isPlaying) {
-                                                audio.pause();
+                                        // Thử phát khi user scroll - không dùng once để đảm bảo phát được
+                                        let scrollTriedMain = false;
+                                        window.addEventListener("scroll", function() {
+                                            if (!scrollTriedMain) {
+                                                scrollTriedMain = true;
+                                                playOnUserInteraction();
+                                            }
+                                        }, { passive: true });
+
+                                        // Thử phát khi user di chuyển chuột - không dùng once
+                                        let mouseTriedMain = false;
+                                        document.addEventListener("mousemove", function() {
+                                            if (!mouseTriedMain) {
+                                                mouseTriedMain = true;
+                                                playOnUserInteraction();
+                                            }
+                                        }, { passive: true });
+
+                                        // Thử phát khi user click bất kỳ đâu (trừ nút toggle)
+                                        document.addEventListener("click", function(e) {
+                                            if (!e.target.closest('#music-toggle')) {
+                                                playOnUserInteraction();
+                                            }
+                                        }, { once: true, passive: true });
+
+                                        // Thử phát khi user touch
+                                        document.addEventListener("touchstart", playOnUserInteraction, { once: true, passive: true });
+                                        
+                                        // Thử phát khi user nhấn phím
+                                        document.addEventListener("keydown", playOnUserInteraction, { once: true, passive: true });
+                                        
+                                        // Thử phát khi user di chuyển chuột vào trang
+                                        document.addEventListener("mouseenter", playOnUserInteraction, { once: true, passive: true });
+                                        
+                                        // Thử phát khi user focus vào trang
+                                        window.addEventListener("focus", playOnUserInteraction, { once: true });
+                                        
+                                        // Event listener tổng quát - phát nhạc khi có bất kỳ tương tác nào
+                                        const interactionEvents = ['click', 'touchstart', 'keydown', 'mousedown', 'pointerdown'];
+                                        interactionEvents.forEach(function(eventType) {
+                                            document.addEventListener(eventType, function(e) {
+                                                // Bỏ qua nếu click vào nút toggle (nút sẽ xử lý riêng)
+                                                if (eventType === 'click' && e.target.closest('#music-toggle')) {
+                                                    return;
+                                                }
+                                                playOnUserInteraction();
+                                            }, { once: true, passive: true });
+                                        });
+                                        
+                                        // Lắng nghe sự kiện play/pause để đồng bộ UI
+                                        if (audio) {
+                                            audio.addEventListener("play", function() {
+                                                isPlaying = true;
+                                                hasStarted = true;
+                                                setUI(true);
+                                            });
+                                            
+                                            audio.addEventListener("pause", function() {
                                                 isPlaying = false;
                                                 setUI(false);
-                                            } else {
-                                                audio.play().then(() => {
+                                            });
+                                            
+                                            // Kiểm tra trạng thái định kỳ
+                                            setInterval(function() {
+                                                if (audio && !audio.paused && !isPlaying) {
                                                     isPlaying = true;
                                                     hasStarted = true;
                                                     setUI(true);
-                                                }).catch(() => { });
+                                                } else if (audio && audio.paused && isPlaying) {
+                                                    isPlaying = false;
+                                                    setUI(false);
+                                                }
+                                            }, 500);
+                                        }
+
+                                        // Setup toggle button
+                                        function setupToggleButton() {
+                                            if (!toggleButton || !audio) {
+                                                setTimeout(setupToggleButton, 100);
+                                                return;
+                                            }
+                                            
+                                            toggleButton.addEventListener("click", function (event) {
+                                                event.stopPropagation();
+                                                if (!audio) return;
+                                                
+                                                // Kiểm tra trạng thái thực tế của audio thay vì biến isPlaying
+                                                if (!audio.paused) {
+                                                    // Nhạc đang phát, tạm dừng
+                                                    audio.pause();
+                                                    isPlaying = false;
+                                                    setUI(false);
+                                                } else {
+                                                    // Nhạc đang tạm dừng, phát
+                                                    // Đảm bảo audio đã load
+                                                    if (audio.readyState < 2) {
+                                                        audio.load();
+                                                    }
+                                                    
+                                                    audio.play().then(() => {
+                                                        isPlaying = true;
+                                                        hasStarted = true;
+                                                        setUI(true);
+                                                    }).catch((err) => {
+                                                        console.log("Toggle play failed:", err);
+                                                        // Thử lại sau 50ms
+                                                        setTimeout(() => {
+                                                            audio.play().then(() => {
+                                                                isPlaying = true;
+                                                                hasStarted = true;
+                                                                setUI(true);
+                                                            }).catch(() => {});
+                                                        }, 50);
+                                                    });
+                                                }
+                                            });
+
+                                            if (audio) {
+                                                audio.addEventListener("play", () => { 
+                                                    isPlaying = true; 
+                                                    hasStarted = true;
+                                                    setUI(true); 
+                                                });
+                                                audio.addEventListener("pause", () => { 
+                                                    isPlaying = false; 
+                                                    setUI(false); 
+                                                });
+                                            }
+                                        }
+                                        
+                                        document.addEventListener("DOMContentLoaded", function() {
+                                            if (initAudio()) {
+                                                setupToggleButton();
+                                            } else {
+                                                setTimeout(function() {
+                                                    if (initAudio()) {
+                                                        setupToggleButton();
+                                                    }
+                                                }, 100);
                                             }
                                         });
-
-                                        audio.addEventListener("play", () => { isPlaying = true; setUI(true); });
-                                        audio.addEventListener("pause", () => { isPlaying = false; setUI(false); });
-                                    });
+                                    })();
                                 </script>
                             </div>
                         </div>
